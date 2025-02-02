@@ -25,7 +25,7 @@ export default async function handler(
   res: NextApiResponse<ResponseData>
 ) {
   if (req.method === "POST") {
-    const body = JSON.parse(req.body);
+    const body = req.body;
     const message = body.message;
 
     // Get or assign the Session ID

@@ -17,28 +17,29 @@ export default async function initTools(
   const cypherChain = await initCypherRetrievalChain(llm, graph);
   // end::cypherchain[]
   // tag::retrievalchain[]
-  const retrievalChain = await initVectorRetrievalChain(llm, embeddings);
+  // const retrievalChain = await initVectorRetrievalChain(llm, embeddings);
   // end::retrievalchain[]
 
   return [
     // tag::cypher[]
     new DynamicStructuredTool({
-      name: "graph-cypher-retrieval-chain",
+      name: "arduino-cypher-retrieval-chain",
       description:
-        "For retrieving movie information from the database including movie recommendations, actors and user ratings",
+      `For retrieving information from the Arduino project database 
+      including sensor data, device status, and user commands`,
       schema: AgentToolInputSchema,
       func: (input, _runManager, config) => cypherChain.invoke(input, config),
     }),
     // end::cypher[]
     // tag::vector[]
-    new DynamicStructuredTool({
-      name: "graph-vector-retrieval-chain",
-      description:
-        "For finding movies, comparing movies by their plot or recommending a movie based on a theme",
-      schema: AgentToolInputSchema,
-      func: (input, _runManager: any, config) =>
-        retrievalChain.invoke(input, config),
-    }),
+    // new DynamicStructuredTool({
+    //   name: "graph-vector-retrieval-chain",
+    //   description:
+    //     "For finding movies, comparing movies by their plot or recommending a movie based on a theme",
+    //   schema: AgentToolInputSchema,
+    //   func: (input, _runManager: any, config) =>
+    //     retrievalChain.invoke(input, config),
+    // }),
     // end::vector[]
   ];
 }

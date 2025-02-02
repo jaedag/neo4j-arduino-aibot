@@ -16,7 +16,7 @@ export default async function initCypherGenerationChain(
   // Create Prompt Template
   const cypherPrompt = PromptTemplate.fromTemplate(`
   You are a Neo4j Developer translating user questions into Cypher to answer questions
-  about movies and provide recommendations.
+  about an Arduino project and its components.
   Convert the user's question into a Cypher statement based on the schema.
 
   You must:
@@ -25,24 +25,21 @@ export default async function initCypherGenerationChain(
   * Use the \`elementId()\` function to return the unique identifier for a node or relationship as \`_id\`.
     For example:
     \`\`\`
-    MATCH (a:Person)-[:ACTED_IN]->(m:Movie)
-    WHERE a.name = 'Emil Eifrem'
-    RETURN m.title AS title, elementId(m) AS _id, a.role AS role
+    MATCH (arduino:Controller)-[:CONTROLS]->(buzzer:Sensor)
+    WHERE buzzer.name = 'Active Buzzer'
+    RETURN  elementId(arduino) AS _id, arduino.name AS Controller, buzzer.name AS Sensor
     \`\`\`
   * Include extra information about the nodes that may help an LLM provide a more informative answer,
-    for example the release date, rating or budget.
-  * For movies, use the tmdbId property to return a source URL.
-    For example: \`'https://www.themoviedb.org/movie/'+ m.tmdbId AS source\`.
-  * For movie titles that begin with "The", move "the" to the end.
-    For example "The 39 Steps" becomes "39 Steps, The" or "the matrix" becomes "Matrix, The".
+    for example power and resistance rating.
   * Limit the maximum number of results to 10.
   * Respond with only a Cypher statement.  No preamble.
 
 
-  Example Question: What role did Tom Hanks play in Toy Story?
+  Example Question: What are all the events triggered by the Arduino Nano and the sensors that triggered them?
   Example Cypher:
-  MATCH (a:Actor {{name: 'Tom Hanks'}})-[rel:ACTED_IN]->(m:Movie {{title: 'Toy Story'}})
-  RETURN a.name AS Actor, m.title AS Movie, elementId(m) AS _id, rel.role AS RoleInMovie
+  MATCH (arduino:Controller)<-[:SENDS_DATA_TO]-(sensor:Sensor)
+  MATCH (sensor:Sensor)-[:DETECTS]->(condition:Condition)-[:CAUSES]->(event:Event)
+  RETURN elementId(event) AS _id, event.createdAt, event.name AS EventName, sensor.name AS SensorName;
 
   Schema:
   {schema}

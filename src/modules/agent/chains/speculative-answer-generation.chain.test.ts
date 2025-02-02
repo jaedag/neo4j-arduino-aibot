@@ -43,10 +43,10 @@ describe("Speculative Answer Generation Chain", () => {
 
   describe("Simple RAG", () => {
     it("should use context to answer the question", async () => {
-      const question = "Who directed the matrix?";
+      const question = "What controller is being used in this arduino project?";
       const response = await chain.invoke({
         question,
-        context: '[{"name": "Lana Wachowski"}, {"name": "Lilly Wachowski"}]',
+        context: '[{name: "Arduino Nano"}]',
       });
 
       // tag::eval[]
@@ -57,30 +57,17 @@ describe("Speculative Answer Generation Chain", () => {
     });
 
     it("should refuse to answer if information is not in context", async () => {
-      const question = "Who directed the matrix?";
+      const question = "What company created the Arduino Nano?";
       const response = await chain.invoke({
         question,
         context:
-          "The Matrix is a 1999 science fiction action film starring Keanu Reeves",
+          "[{name: 'Arduino Uno'}, {name: 'Arduino Mega'}, {name: 'Arduino Pro Mini'}]",
       });
 
       const evaluation = await evalChain.invoke({ question, response });
       expect(`${evaluation.toLowerCase()} - ${response}`).toContain("no");
     });
 
-    it("should answer this one??", async () => {
-      const role = "The Chief";
-
-      const question = "What was Emil Eifrems role in Neo4j The Movie??";
-      const response = await chain.invoke({
-        question,
-        context: `{"Role":"${role}"}`,
-      });
-
-      expect(response).toContain(role);
-
-      const evaluation = await evalChain.invoke({ question, response });
-      expect(`${evaluation.toLowerCase()} - ${response}`).toContain("yes");
-    });
+  
   });
 });
