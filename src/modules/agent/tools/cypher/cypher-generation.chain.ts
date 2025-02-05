@@ -31,6 +31,7 @@ export default async function initCypherGenerationChain(
     \`\`\`
   * Include extra information about the nodes that may help an LLM provide a more informative answer,
     for example power and resistance rating.
+  * The word 'devices' will be used as a generic term to describe all acutators, sensors, and controllers.
   * Limit the maximum number of results to 10.
   * Respond with only a Cypher statement.  No preamble.
 
