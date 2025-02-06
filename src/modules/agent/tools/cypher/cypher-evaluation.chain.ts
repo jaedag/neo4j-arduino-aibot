@@ -39,8 +39,11 @@ export default async function initCypherEvaluationChain(
   * Assign a variable to nodes or relationships when intending to access their properties.
   * Use \`IS NOT NULL\` to check for property existence.
   * Use the \`elementId()\` function to return the unique identifier for a node or relationship as \`_id\`.
-    For example "The 39 Steps" becomes "39 Steps, The" or "the matrix" becomes "Matrix, The".
   * Limit the maximum number of results to 10.
+  * Whenever searching a multi-word string, split the string into individual words
+    and do a string comparison on each word.
+    For example, "Electrical Design Guide" should be split into "Electrical", "Design", and "Guide"
+    and each word should be used in the comparison.
   * Respond with only a Cypher statement.  No preamble.
 
   Respond with a JSON object with "cypher" and "errors" keys.

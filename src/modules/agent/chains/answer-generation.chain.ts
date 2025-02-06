@@ -24,6 +24,14 @@ export default function initGenerateAnswerChain(
     Context:
     {context}
 
+    * Whenever you are asked a question about the kind of input or output data is required or depended on, 
+    you must also interpret the datatype and return the type or input or output data as a string property.
+      * For example if the input data includes the extension .xlsx or .xls files, 
+      you must interpret the data type as "Excel".
+      * If it is a URL or link with the substring 'sharepoint' in it, 
+        you must interpret the data type as "Sharepoint URL".
+      * If you cannot determine the data type, return the input data field.
+
     Answer as if you have been asked the original question.
     Do not use your pre-trained knowledge.
 
