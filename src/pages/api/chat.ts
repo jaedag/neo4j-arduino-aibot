@@ -25,8 +25,13 @@ export default async function handler(
   res: NextApiResponse<ResponseData>
 ) {
   if (req.method === "POST") {
-    const body = req.body;
+    const body = typeof req.body === 'string' ?JSON.parse(req.body): req.body;
     const message = body.message;
+
+    if (!message) {
+      res.status(400).json({ message: "Message is required" });
+      return;
+    }
 
     // Get or assign the Session ID
     const sessionId = getSessionId(req, res);

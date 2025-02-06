@@ -24,10 +24,10 @@ export default async function initTools(
   return [
     // tag::cypher[]
     new DynamicStructuredTool({
-      name: "arduino-cypher-retrieval-chain",
+      name: "cypher-retrieval-chain",
       description:
-      `For retrieving information from the Arduino project database 
-      including sensor data, device status, and user commands`,
+      `For retrieving information from the project database 
+      including data about workflow, design, focus areas and users.`,
       schema: AgentToolInputSchema,
       func: (input, _runManager, config) => cypherChain.invoke(input, config),
     }),

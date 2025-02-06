@@ -39,11 +39,7 @@ export default async function initCypherEvaluationChain(
   * Assign a variable to nodes or relationships when intending to access their properties.
   * Use \`IS NOT NULL\` to check for property existence.
   * Use the \`elementId()\` function to return the unique identifier for a node or relationship as \`_id\`.
-  * For movies, use the tmdbId property to return a source URL.
-    For example: \`'https://www.themoviedb.org/movie/'+ m.tmdbId AS source\`.
-  * For movie titles that begin with "The", move "the" to the end.
     For example "The 39 Steps" becomes "39 Steps, The" or "the matrix" becomes "Matrix, The".
-  * For the role a person played in a movie, use the role property on the ACTED_IN relationship.
   * Limit the maximum number of results to 10.
   * Respond with only a Cypher statement.  No preamble.
 
@@ -56,15 +52,12 @@ export default async function initCypherEvaluationChain(
 
   Fixable Example #1:
   * cypher:
-      MATCH (a:Actor {{name: 'Emil Eifrem'}})-[:ACTED_IN]->(m:Movie)
-      RETURN a.name AS Actor, m.title AS Movie, m.tmdbId AS source,
-      elementId(m) AS _id, m.released AS ReleaseDate, r.role AS Role LIMIT 10
+      MATCH (workflow:Workflow)-[:HAS_FOCUS_AREA]->(focusArea:FocusArea)
+      RETURn workflow.name AS WorkflowName, focusArea.name AS FocusAreaName, r.description LIMIT 10
   * errors: ["Variable \`r\` not defined (line 1, column 172 (offset: 171))"]
   * response:
-      MATCH (a:Actor {{\name: 'Emil Eifrem'}})-[r:ACTED_IN]->(m:Movie)
-      RETURN a.name AS Actor, m.title AS Movie, m.tmdbId AS source,
-      elementId(m) AS _id, m.released AS ReleaseDate, r.role AS Role LIMIT 10
-
+      MATCH (workflow:Workflow)-[r:HAS_FOCUS_AREA]->(focusArea:FocusArea)
+      RETURN workflow.name AS WorkflowName, focusArea.name AS FocusAreaName LIMIT 10
 
   Schema:
   {schema}

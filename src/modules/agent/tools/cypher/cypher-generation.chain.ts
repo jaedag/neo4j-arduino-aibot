@@ -16,7 +16,7 @@ export default async function initCypherGenerationChain(
   // Create Prompt Template
   const cypherPrompt = PromptTemplate.fromTemplate(`
   You are a Neo4j Developer translating user questions into Cypher to answer questions
-  about an Arduino project and its components.
+  about an workflows in an organisation.
   Convert the user's question into a Cypher statement based on the schema.
 
   You must:
@@ -25,28 +25,49 @@ export default async function initCypherGenerationChain(
   * Use the \`elementId()\` function to return the unique identifier for a node or relationship as \`_id\`.
     For example:
     \`\`\`
-    MATCH (arduino:Controller)-[:CONTROLS]->(buzzer:Sensor)
-    WHERE buzzer.name = 'Active Buzzer'
-    RETURN  elementId(arduino) AS _id, arduino.name AS Controller, buzzer.name AS Sensor
+    MATCH (workflow:Workflow)-[:HAS_FOCUS_AREA]->(focusArea:FocusArea)
+    WHERE workflow.details CONTAINS "RVP"
+    RETURN  elementId(workflow) AS _id, workflow.name AS WorkflowName, focusArea.name AS FocusAreaName;
     \`\`\`
   * Include extra information about the nodes that may help an LLM provide a more informative answer,
-    for example power and resistance rating.
-  * The word 'devices' will be used as a generic term to describe all acutators, sensors, and controllers.
-  * Limit the maximum number of results to 10.
+    for example name, details, input data, description, etc.
+  * Whenever you are describing workflows, designs, focus areas or users, make sure to return the name of the node.
+  * The whenever you are asked a question about the input or output data, 
+    you must also interpret the datatype and return the type or input or output data as a property.
+  * For example if the input data includes the extension .xlsx or .xls files, 
+    you must interpret the data type as "Excel".
+  * If it is a URL with the word 'sharepoint' in it, you must interpret the data type as "Sharepoint URL".
+  * If it is a file with the extension .brd, you must interpret the data type as "BRD File".
+  * Whenever searching within string, use the toLower() function to make the search case-insensitive.
+  * The word "related" should be interpreted as either a relationship or a property search.
   * Respond with only a Cypher statement.  No preamble.
 
 
-  Example Question: What are all the events triggered by the Arduino Nano and the sensors that triggered them?
+  Example Question: What workflows are related to the N-1 interposer design?
   Example Cypher:
-  MATCH (arduino:Controller)<-[:SENDS_DATA_TO]-(sensor:Sensor)
-  MATCH (sensor:Sensor)-[:DETECTS]->(condition:Condition)-[:CAUSES]->(event:Event)
-  RETURN elementId(event) AS _id, event.createdAt, event.name AS EventName, sensor.name AS SensorName;
+  MATCH (workflow:Workflow)-[:HAS_FOCUS_AREA]->(focusArea:FocusArea)-[:HAS_DESIGN]->(design:Design)
+  WHERE toLower(workflow.name) CONTAINS toLower("N-1 interposer design")
+  OR toLower(workflow.details) CONTAINS toLower("N-1 interposer design")
+  OR toLower(focusArea.name) CONTAINS toLower("N-1 interposer design")
+  OR toLower(design.name) CONTAINS toLower("N-1 interposer design")
+
+  RETURN elementId(workflow) AS _id, workfow.createdAt, workflow.name AS WorkflowName, 
+  workflow.details AS WorkflowDetails, focusArea.name AS FocusAreaName, design.name AS DesignName;
+
+  Example Question: What kind of input data is required for a Demand Management workflow?
+  Example Cypher:
+  MATCH (workflow:Workflow)-[:HAS_FOCUS_AREA]->(focusArea:FocusArea)
+  WHERE toLower(workflow.name) CONTAINS toLower("Demand Management")
+
+  RETURN elementId(workflow) AS _id, workflow.name AS WorkflowName,
+  workflow.inputData AS InputData, workflow.outputData AS OutputData;
 
   Schema:
   {schema}
 
   Question:
   {question}
+
 `);
   // TODO: Create the runnable sequence
   return RunnableSequence.from<string, string>([
